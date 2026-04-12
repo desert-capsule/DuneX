@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -2400,7 +2401,14 @@ export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const [clock, setClock] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const [, navigate] = useLocation();
   const { lang, setLang, t } = useLanguage();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/login");
+  }
   const d = t.dashboard;
 
   useEffect(() => {
@@ -2470,15 +2478,25 @@ export default function Dashboard() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs border border-primary/30">OP</div>
-            <div>
-              <p className="text-xs font-bold text-white">Operations Lead</p>
-              <p className="text-[10px] text-green-400 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" /> Online</p>
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs border border-primary/30">
+              {user?.username?.slice(0, 2).toUpperCase() ?? "AD"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-white truncate">{user?.username ?? "admin"}</p>
+              <p className="text-[10px] text-muted-foreground truncate">{user?.role ?? "Admin"}</p>
             </div>
           </div>
-          <Link href="/" className="mt-3 flex items-center gap-2 text-[10px] text-muted-foreground hover:text-white transition-colors">
-            <Home className="w-3 h-3" /> {d.returnSite}
-          </Link>
+          <div className="mt-3 flex items-center gap-2">
+            <Link href="/" className="flex-1 flex items-center gap-2 text-[10px] text-muted-foreground hover:text-white transition-colors">
+              <Home className="w-3 h-3" /> {d.returnSite}
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-[10px] text-red-400/70 hover:text-red-400 transition-colors px-2 py-1 border border-red-500/20 hover:border-red-500/40"
+            >
+              <Lock className="w-3 h-3" /> Logout
+            </button>
+          </div>
         </div>
       </aside>
 

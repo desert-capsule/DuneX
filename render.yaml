@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: dunex
+    runtime: node
+    buildCommand: pnpm install && pnpm run typecheck:libs && pnpm --filter @workspace/dunex run build && pnpm --filter @workspace/api-server run build
+    startCommand: NODE_ENV=production node artifacts/api-server/dist/index.mjs
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dunex-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: NODE_ENV
+        value: production
+
+databases:
+  - name: dunex-db
+    databaseName: dunex
+    user: dunex

@@ -20,7 +20,8 @@ router.post("/", async (req, res) => {
   try {
     const { type, capsule, issue, tech, status, notes, reportedAt } = req.body;
     if (!capsule || !issue || !tech) {
-      return res.status(400).json({ error: "capsule, issue, and tech are required" });
+      res.status(400).json({ error: "capsule, issue, and tech are required" });
+      return;
     }
     const count = await db.select().from(maintenanceTable);
     const alertId = `MNT-${String(count.length + 1).padStart(3, "0")}`;
@@ -54,7 +55,7 @@ router.put("/:id", async (req, res) => {
       ...(notes !== undefined && { notes }),
       ...(reportedAt !== undefined && { reportedAt: new Date(reportedAt) }),
     }).where(eq(maintenanceTable.id, id)).returning();
-    if (!row) return res.status(404).json({ error: "Not found" });
+    if (!row) { res.status(404).json({ error: "Not found" }); return; }
     res.json(row);
   } catch (e: any) {
     res.status(500).json({ error: e.message });
