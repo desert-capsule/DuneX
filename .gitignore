@@ -44,6 +44,13 @@ Thumbs.db
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
 
-# Replit
+# Replit platform files (not needed on GitHub/Render)
 .cache/
 .local/
+.agents/
+.config/
+.replit
+.replitignore
+
+# Temp / test files in attached_assets
+attached_assets/*.txt

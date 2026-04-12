@@ -5,8 +5,6 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 const rawPort = process.env.PORT;
-const isBuild = process.env.NODE_ENV === "production" || process.argv.includes("build");
-
 const port = rawPort ? Number(rawPort) : 3000;
 
 if (rawPort && (Number.isNaN(port) || port <= 0)) {
