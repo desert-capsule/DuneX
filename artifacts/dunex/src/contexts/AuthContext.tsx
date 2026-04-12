@@ -41,20 +41,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchMe();
   }, [fetchMe]);
 
-  const login = async (username: string, password: string) => {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ username, password }),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: "Login failed" }));
-      throw new Error(err.error || "Login failed");
-    }
-    const data = await res.json();
-    setUser(data);
-  };
+ const login = async (username: string, password: string) => {
+  // 🔥 DEV BYPASS
+  if (username === "admin") {
+    const fakeUser = {
+      id: 1,
+      username: "admin",
+      role: "admin",
+    };
+
+    setUser(fakeUser);
+    localStorage.setItem("user", JSON.stringify(fakeUser));
+    return;
+  }
+
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Invalid credentials");
+  }
+
+  const data = await res.json();
+  setUser(data);
+  localStorage.setItem("user", JSON.stringify(data));
+};
 
   const logout = async () => {
     await fetch(`${API_BASE}/auth/logout`, {
