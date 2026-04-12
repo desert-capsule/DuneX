@@ -12,20 +12,32 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const [, navigate] = useLocation();
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await login(username, password);
+  try {
+    // 🔥 BYPASS LOGIN (DEV ONLY)
+    if (username === "admin") {
+      localStorage.setItem("mock_user", JSON.stringify({
+        id: 1,
+        username: "admin",
+        role: "admin"
+      }));
+
       navigate("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    await login(username, password);
+    navigate("/dashboard");
+  } catch (err: any) {
+    setError(err.message || "Login failed");
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="min-h-screen bg-[#040404] flex items-center justify-center p-4 font-mono relative overflow-hidden">
