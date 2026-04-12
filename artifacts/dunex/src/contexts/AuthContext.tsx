@@ -37,7 +37,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  useEffect(() => {
+    useEffect(() => {
+  const stored = localStorage.getItem("user");
+
+  if (stored) {
+    setUser(JSON.parse(stored));
+    setLoading(false);
+    return;
+  }
+
+  fetchMe();
+}, [fetchMe]);
+
     fetchMe();
   }, [fetchMe]);
 
