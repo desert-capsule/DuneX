@@ -58,8 +58,9 @@ function ProtectedDashboard() {
 function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
-        <Switch>
-  <Route path="/dashboard" component={Dashboard} />
+      <Switch>
+        <Route path="/dashboard" component={ProtectedDashboard} />
+        <Route path="/login" component={Login} />
         <Route>
           <PublicLayout>
             <Switch>
