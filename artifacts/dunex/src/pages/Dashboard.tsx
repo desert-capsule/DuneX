@@ -38,6 +38,7 @@ const API = "/api";
 
 async function apiFetch(path: string, opts?: RequestInit) {
   const res = await fetch(`${API}${path}`, {
+    credentials: "include",
     headers: { "Content-Type": "application/json", ...(opts?.headers || {}) },
     ...opts,
   });

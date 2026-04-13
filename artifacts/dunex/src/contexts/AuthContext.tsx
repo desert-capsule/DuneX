@@ -41,31 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("user");
-
-    if (stored) {
-      setUser(JSON.parse(stored));
-      setLoading(false);
-      return;
-    }
-
     fetchMe();
   }, [fetchMe]);
 
   const login = async (username: string, password: string) => {
-    // 🔥 DEV BYPASS
-    if (username === "admin") {
-      const fakeUser = {
-        id: 1,
-        username: "admin",
-        role: "admin",
-      };
-
-      setUser(fakeUser);
-      localStorage.setItem("user", JSON.stringify(fakeUser));
-      return;
-    }
-
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -74,12 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (!res.ok) {
-      throw new Error("Invalid credentials");
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || "Invalid username or password");
     }
 
     const data = await res.json();
     setUser(data);
-    localStorage.setItem("user", JSON.stringify(data));
   };
 
   const logout = async () => {
@@ -89,7 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     setUser(null);
-    localStorage.removeItem("user");
   };
 
   return (

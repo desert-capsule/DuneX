@@ -18,6 +18,7 @@ type Step = 1 | 2 | 3 | 4;
 const API = "/api";
 async function bookingApiFetch(path: string, opts?: RequestInit) {
   const res = await fetch(`${API}${path}`, {
+    credentials: "include",
     headers: { "Content-Type": "application/json", ...(opts?.headers || {}) },
     ...opts,
   });
