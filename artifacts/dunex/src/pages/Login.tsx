@@ -12,54 +12,40 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const [, navigate] = useLocation();
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
 
-  try {
-    // 🔥 BYPASS LOGIN (DEV ONLY)
-    if (username === "admin") {
-      localStorage.setItem("mock_user", JSON.stringify({
-        id: 1,
-        username: "admin",
-        role: "admin"
-      }));
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
+    try {
+      await login(username, password);
       navigate("/dashboard");
-      return;
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-
-    await login(username, password);
-    navigate("/dashboard");
-  } catch (err: any) {
-    setError(err.message || "Login failed");
-  } finally {
-    setLoading(false);
   }
-}
 
   return (
     <div className="min-h-screen bg-[#040404] flex items-center justify-center p-4 font-mono relative overflow-hidden">
-      {/* Background grain effect */}
-      <div className="absolute inset-0 opacity-30"
+      <div
+        className="absolute inset-0 opacity-30"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.4'/%3E%3C/svg%3E")`,
         }}
       />
 
-      {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-yellow-500/5 blur-[120px] pointer-events-none" />
 
       <div className="relative w-full max-w-sm">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <img src={logoPath} alt="DuneX" className="h-12 w-auto mb-4" />
           <h1 className="text-white text-xl font-bold tracking-[0.3em]">DUNE<span className="text-primary">X</span></h1>
           <p className="text-muted-foreground text-[10px] tracking-widest mt-1">OPERATIONS DASHBOARD</p>
         </div>
 
-        {/* Login card */}
         <div className="bg-[#0a0a0a] border border-white/10 p-8">
           <div className="mb-6">
             <h2 className="text-white text-sm font-bold tracking-widest">ACCESS CONTROL</h2>
@@ -67,7 +53,6 @@ async function handleSubmit(e: React.FormEvent) {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Username */}
             <div className="space-y-1.5">
               <label className="text-[10px] text-muted-foreground tracking-widest">USERNAME</label>
               <div className="relative">
@@ -83,7 +68,6 @@ async function handleSubmit(e: React.FormEvent) {
               </div>
             </div>
 
-            {/* Password */}
             <div className="space-y-1.5">
               <label className="text-[10px] text-muted-foreground tracking-widest">PASSWORD</label>
               <div className="relative">
@@ -106,14 +90,12 @@ async function handleSubmit(e: React.FormEvent) {
               </div>
             </div>
 
-            {/* Error */}
             {error && (
               <div className="bg-red-500/10 border border-red-500/30 px-3 py-2 text-[10px] text-red-400 tracking-wider">
                 {error}
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
@@ -136,7 +118,6 @@ async function handleSubmit(e: React.FormEvent) {
           </div>
         </div>
 
-        {/* Back link */}
         <div className="mt-4 text-center">
           <a href="/" className="text-[10px] text-muted-foreground hover:text-white transition-colors tracking-wider">
             ← Return to public site
