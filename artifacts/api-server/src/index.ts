@@ -20,21 +20,19 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-async function seedAdmin() {
-  try {
-    const existing = await db.select().from(accountsTable).limit(1);
-    if (existing.length === 0) {
-      const passwordHash = await bcrypt.hash("dunex@2026", 10);
-      await db.insert(accountsTable).values({
-        username: "admin",
-        email: "admin@dunex.com",
-        role: "Admin",
-        passwordHash,
-      });
-      logger.info("Default admin account created — username: admin, password: dunex@2026");
-    }
-  } catch (e) {
-    logger.warn({ err: e }, "Could not seed admin (DB may not be ready yet)");
+async function ensureAdminSeed() {
+  await db.execute(`CREATE TABLE IF NOT EXISTS accounts (id serial primary key, username text not null unique, email text not null unique, role text not null default 'Operator', password_hash text not null, created_at timestamp not null default now())`);
+
+  const existing = await db.select().from(accountsTable).limit(1);
+  if (existing.length === 0) {
+    const passwordHash = await bcrypt.hash("dunex@2026", 10);
+    await db.insert(accountsTable).values({
+      username: "admin",
+      email: "admin@dunex.com",
+      role: "Admin",
+      passwordHash,
+    });
+    logger.info("Default admin account created — username: admin, password: dunex@2026");
   }
 }
 
@@ -50,6 +48,11 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(port, "0.0.0.0", async () => {
-  logger.info({ port }, "Server listening");
-  await seedAdmin();
+  try {
+    await ensureAdminSeed();
+    logger.info({ port }, "Server listening");
+  } catch (err) {
+    logger.error({ err }, "Failed to initialize database");
+    process.exit(1);
+  }
 });
