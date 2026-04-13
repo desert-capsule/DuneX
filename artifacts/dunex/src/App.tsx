@@ -59,11 +59,12 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
+        <Route path="/" component={Dashboard} />
         <Route path="/dashboard" component={Dashboard} />
+
         <Route>
           <PublicLayout>
             <Switch>
-              <Route path="/" component={Home} />
               <Route path="/about" component={About} />
               <Route path="/capsules" component={Capsules} />
               <Route path="/capsules/:id" component={CapsuleDetails} />
@@ -79,6 +80,7 @@ function Router() {
     </Suspense>
   );
 }
+
 
 function App() {
   return (
