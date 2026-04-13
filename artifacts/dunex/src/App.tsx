@@ -17,7 +17,6 @@ const Booking = lazy(() => import("@/pages/Booking"));
 const Partners = lazy(() => import("@/pages/Partners"));
 const Contact = lazy(() => import("@/pages/Contact"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const Login = lazy(() => import("@/pages/Login"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 const queryClient = new QueryClient();
