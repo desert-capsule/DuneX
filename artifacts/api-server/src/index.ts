@@ -21,8 +21,84 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 async function ensureAdminSeed() {
-  await db.execute(`CREATE TABLE IF NOT EXISTS accounts (id serial primary key, username text not null unique, email text not null unique, role text not null default 'Operator', password_hash text not null, created_at timestamp not null default now())`);
+  // Create all tables if they don't exist
+  await db.execute(`CREATE TABLE IF NOT EXISTS accounts (
+    id serial primary key,
+    username text not null unique,
+    email text not null unique,
+    role text not null default 'Operator',
+    password_hash text not null,
+    created_at timestamp not null default now()
+  )`);
 
+  await db.execute(`CREATE TABLE IF NOT EXISTS students (
+    id serial primary key,
+    student_id text not null unique,
+    name text not null,
+    role text not null,
+    department text not null,
+    shift text not null default 'Morning',
+    status text not null default 'On Duty',
+    capsules json not null default '[]',
+    created_at timestamp not null default now()
+  )`);
+
+  await db.execute(`CREATE TABLE IF NOT EXISTS books (
+    id serial primary key,
+    title text not null,
+    author text not null,
+    category text not null,
+    status text not null default 'Available',
+    description text not null default '',
+    cover_url text not null default '',
+    created_at timestamp not null default now()
+  )`);
+
+  await db.execute(`CREATE TABLE IF NOT EXISTS reservations (
+    id serial primary key,
+    reservation_id text not null unique,
+    guest text not null,
+    capsule text not null,
+    checkin text not null,
+    checkout text not null,
+    status text not null default 'Pending',
+    amount integer not null default 0,
+    notes text not null default '',
+    created_at timestamp not null default now()
+  )`);
+
+  await db.execute(`CREATE TABLE IF NOT EXISTS maintenance (
+    id serial primary key,
+    alert_id text not null unique,
+    type text not null default 'Warning',
+    capsule text not null,
+    issue text not null,
+    tech text not null,
+    status text not null default 'Open',
+    notes text not null default '',
+    reported_at timestamp not null default now(),
+    created_at timestamp not null default now()
+  )`);
+
+  await db.execute(`CREATE TABLE IF NOT EXISTS reviews (
+    id serial primary key,
+    capsule_id text not null,
+    capsule_name text not null,
+    guest_name text not null,
+    rating integer not null default 5,
+    comment text not null default '',
+    status text not null default 'Published',
+    created_at timestamp not null default now()
+  )`);
+
+  await db.execute(`CREATE TABLE IF NOT EXISTS system_settings (
+    id serial primary key,
+    key text not null unique,
+    value text not null default '',
+    updated_at timestamp not null default now()
+  )`);
+
+  // Seed default admin if no accounts exist
   const existing = await db.select().from(accountsTable).limit(1);
   if (existing.length === 0) {
     const passwordHash = await bcrypt.hash("dunex@2026", 10);
