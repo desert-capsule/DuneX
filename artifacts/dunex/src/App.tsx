@@ -59,8 +59,7 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        <Route path="/dashboard" component={ProtectedDashboard} />
-        <Route path="/login" component={Login} />
+        <Route path="/dashboard" component={Dashboard} />
         <Route>
           <PublicLayout>
             <Switch>
